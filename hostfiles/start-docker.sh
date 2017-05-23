@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker run --name "vlc" -v /home/kevin/py-apps/direct-receive/hostfiles:/data/hostfiles --privileged -i -t -p 3001:3001/udp --device /dev/blackmagic/io0 --entrypoint /data/hostfiles/start-direct-receive.sh pmw1/vlc
+sudo docker run --name "direct-receive" -v /home/kevin/py-apps/direct-receive/hostfiles:/data/hostfiles --privileged -i -t -p 3000:3000/udp --device /dev/blackmagic/io0 --entrypoint /data/hostfiles/start-direct-receive.sh pmw1/vlc

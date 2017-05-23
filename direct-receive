@@ -21,14 +21,21 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--mode', '-m', help="Set vlc mode (udp/rtp)")
 	parser.add_argument('--caching', '-c', help="Set manual network caching in miliseconds")
+	parser.add_argument('--port', '-p', help="Set listening port")
+	parser.add_argument('--force', '-f', help="Force kill other direct-send container before starting")
+	parser.add_argument('--destroy', '-d', help="Destroy direct-send container")
+
 	## Replicate above line to add more optional input arguments
 	
 	args = parser.parse_args()
 	print()
 	print("Mode set   : ", args.mode)
-	print("Cashing set: ", args.caching, " ms")
-	mode = args.mode
-	caching = args.caching
+	print("Cashing set: ", args.caching, "ms")
+	mode=args.mode
+	caching=args.caching
+	port=args.port
+	force=args.force
+	destroy=args.destroy
 #####################################################################################
 ########################  END PARSE ARGUEMENTS INTO VARIABLES #######################
 
@@ -53,10 +60,10 @@ def buildCvlcLauncher():
 	## open file for writing
 	direct_recevie_file = open("hostfiles/start-direct-receive.sh", "wb")
 	direct_recevie_file.write(bytes("#!/bin/bash\n", 'UTF-8'))
-	direct_recevie_file.write(bytes("cvlc udp://@:3001 ", 'UTF-8'))
+	direct_recevie_file.write(bytes("cvlc {}://@:{} ".format(mode, port), 'UTF-8'))
 	direct_recevie_file.write(bytes("-I dummy ", 'UTF-8'))
 	direct_recevie_file.write(bytes("--ignore-config ", 'UTF-8'))
-	direct_recevie_file.write(bytes("--network-caching=300 ", 'UTF-8'))
+	direct_recevie_file.write(bytes("--network-caching=" + caching + " ", 'UTF-8'))
 	direct_recevie_file.write(bytes("--decklink-vout-video-connection sdi ", 'UTF-8'))
 	direct_recevie_file.write(bytes("--decklink-mode Hi59 ", 'UTF-8'))
 	direct_recevie_file.write(bytes("--decklink-aspect-ratio=16:9 ", 'UTF-8'))
@@ -93,10 +100,10 @@ def dockerLauncher():
 	start_docker_file = open("hostfiles/start-docker.sh", "wb")
 	start_docker_file.write(bytes("#!/bin/bash\n", 'UTF-8'))
 	start_docker_file.write(bytes("sudo docker run ", 'UTF-8'))
-	start_docker_file.write(bytes("--name \"vlc\" ", 'UTF-8'))
+	start_docker_file.write(bytes("--name \"direct-receive\" ", 'UTF-8'))
 	start_docker_file.write(bytes("-v /home/kevin/py-apps/direct-receive/hostfiles:/data/hostfiles ", 'UTF-8'))
 	start_docker_file.write(bytes("--privileged -i -t ", 'UTF-8'))
-	start_docker_file.write(bytes("-p 3001:3001/udp ", 'UTF-8'))
+	start_docker_file.write(bytes("-p {}:{}/udp ".format(port, port), 'UTF-8'))
 	start_docker_file.write(bytes("--device /dev/blackmagic/io0 ", 'UTF-8'))
 	start_docker_file.write(bytes("--entrypoint /data/hostfiles/start-direct-receive.sh ", 'UTF-8'))
 	start_docker_file.write(bytes("pmw1/vlc", 'UTF-8'))
@@ -110,6 +117,39 @@ def dockerLauncher():
 #####################################################################################
 ############################# END BUILD DOCKER LAUNCHER ############################
 
+
+def testDestroyOption():
+	if(destroy=='1'):
+		print("Existing Direct Receive Container DESTROYED !!!")
+		quit()
+
+
+def testForceOption():
+	if(force=='1'):
+		print("Forcing shutdown of running direct receive container")
+		bashCommand="sudo docker rm -f direct-receive"
+		os.system(bashCommand)
+
+
+
+
+#####################################################################################
+
+#####################################################################################
+
+#####################################################################################
+
+						#END DEFINITIONS AND BEGIN SCRINT##
+
+#####################################################################################
+
+#####################################################################################
+
+#####################################################################################
+
+
+testDestroyOption()
+testForceOption()
 
 
 buildCvlcLauncher()

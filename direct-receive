@@ -70,8 +70,8 @@ def buildCvlcLauncher():
 	direct_recevie_file.write(bytes("-V decklinkoutput ", 'UTF-8'))
 	direct_recevie_file.write(bytes("-A decklinkoutput ", 'UTF-8'))
 	direct_recevie_file.write(bytes("--decklink-vout-mode Hi59 ", 'UTF-8'))
-	direct_recevie_file.write(bytes("--decklink-aout-audio-rate 48000 ", 'UTF-8'))
-	direct_recevie_file.write(bytes("--decklink-aout-audio-channels 2", 'UTF-8'))
+	##direct_recevie_file.write(bytes("--decklink-aout-audio-rate 48000 ", 'UTF-8'))
+	##direct_recevie_file.write(bytes("--decklink-aout-audio-channels 2", 'UTF-8'))
 
 	direct_recevie_file.close()
 
@@ -101,7 +101,7 @@ def dockerLauncher():
 	start_docker_file.write(bytes("#!/bin/bash\n", 'UTF-8'))
 	start_docker_file.write(bytes("sudo docker run ", 'UTF-8'))
 	start_docker_file.write(bytes("--name \"direct-receive\" ", 'UTF-8'))
-	start_docker_file.write(bytes("-v /home/kevin/py-apps/direct-receive/hostfiles:/data/hostfiles ", 'UTF-8'))
+	start_docker_file.write(bytes("-v /home/kevin/apps/direct-receive/hostfiles:/data/hostfiles ", 'UTF-8'))
 	start_docker_file.write(bytes("--privileged -i -t ", 'UTF-8'))
 	start_docker_file.write(bytes("-p {}:{}/udp ".format(port, port), 'UTF-8'))
 	start_docker_file.write(bytes("--device /dev/blackmagic/io0 ", 'UTF-8'))

@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker run --name "direct-receive" -v /home/kevin/apps/direct-receive/hostfiles:/data/hostfiles --privileged -i -t -p 3000:3000/udp --device /dev/blackmagic/io0 --entrypoint /data/hostfiles/start-direct-receive.sh pmw1/vlc
+sudo docker run --name "direct-receive" -v /home/kevin/apps/direct-receive/hostfiles:/data/hostfiles --privileged -i -t -p 3000:3000/udp --network="split" --ip="10.0.10.4" --device /dev/blackmagic/io0 --entrypoint /bin/bash pmw1/vlc
